@@ -1,0 +1,7 @@
+4
+v 1 2 3 u
+u 1 2 3 4
+2 3
+5
+The graph in the figures, but with one extra vertex.  It isn't one connected
+component anymore.
