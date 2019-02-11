@@ -1,0 +1,21 @@
+#!/bin/bash
+> output
+
+for n in $(seq 25 25)
+do
+for k in $(seq 1 3)
+do
+
+echo -e "n = $n, k = $k" | tee -a output
+echo "use application \"graph\";" > script
+echo "use application \"topaz\";" >> script
+echo -n "my \$complex=clique_complex(graph_from_edges([" >> script
+./TorusClique $n $k >> script
+echo "]));" >> script
+echo "print \$complex->HOMOLOGY;" >> script
+
+polymake --script script | tee -a output
+echo -e " " | tee -a output
+
+done
+done
