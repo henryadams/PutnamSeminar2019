@@ -33,12 +33,24 @@
 
 \begin{document}
 
-\title{On the minimal cores of unit disk graphs}
-\author{CSU Putnam Seminar, Spring 2019}
+\title{
+A survey of the planar wedge of spheres conjecture
+%On the minimal cores of unit disk graphs
+}
+\author{CSU Putnam Seminar, Spring 2019 (we will add our names later)}
 \date{\today}
 \maketitle
 
 \note{You can type any comments or ask questions in a blue ``note" environment!}
+
+\section{Introduction}
+
+A recent conjecture states that the clique complex of any unit disk graph is a wedge of spheres (up to homotopy type).
+\begin{conjecture}\label{conj:main}
+The clique complex of any unit disk graph is homotopy equivalent to a wedge sum of spheres.
+\end{conjecture}
+An equivalent formulation is that the Vietoris--Rips complex of any set of points in the plane is a wedge of spheres.
+We will survey what is known and not known about this conjecture, and also describe some related computational experiments.
 
 
 \section{Project Overview}
@@ -65,8 +77,6 @@ We will then use this software to visualize unit disk graphs of points in $\R^2$
 A later task will be to learn a little bit of combinatorial topology.
 Part of the motivation for this project is to prove or disprove the conjecture that ``the clique complex of the unit disk graph of any finite set of points in $\R^2$ is always homotopy equivalent to a wedge sum of spheres", whatever in the world that means!
 
-\section{Introduction}
-
 \section{Cop-win graphs}\label{sec:cop-win}
 
 Let $G=(V,E)$ be a simple undirected graph (no loops or multiple edges) with $V$ the set of vertices and with $E$ the set of edges.
@@ -86,10 +96,10 @@ In a graph $G$, we say that a vertex $v$ is \emph{dominated} by a vertex $u$ if 
 %Let $G\setminus u$ be the graph obtained by deleting $u$ and all of the edges containing $u$.
 
 If you iteratively remove dominated vertices from a graph $G$, then your final ending configuration (once there are no more remaining dominated vertices) is called a \emph{minimal core}.
-Surprisingly, all minimal cores of a graph are isomorphic.
+An important fact is that all minimal cores of a graph are isomorphic.
 
 We say that a graph $G$ is \emph{dismantlable} if its minimal core is a single vertex, or equivalently, if one can remove dominated vertices one-by-one until only a single vertex remains.
-A cool theorem is that a graph is a cop-win graph if and only if it is dismantlable.
+A second important fact is that a graph is a cop-win graph if and only if it is dismantlable.
 
 
 
@@ -108,34 +118,65 @@ I claim that if we wish to implement it ourselves, the ``right'' way to do it is
 
 \section{Unit disk graphs}
 
+Let $\R^2$ be the euclidean plane, and for any two points $u,v\in\R^2$, let $d(u,v)$ denote the Euclidean distance between them.
+
+\begin{definition}
+Let $V \subseteq \R^2$ be a subset of the plane.
+The \emph{unit disk graph} $G(V)$ is the graph $G$ with vertex set $V$, in $u,v$ are the vertices of an edge in $G(V)$ if and only if $d(u,v) \leq 1$.
+\end{definition}
+
+\begin{definition}
+Given a metric space $X$ and a distance threshold $r>0$, the \emph{Vietoris-Rips simplicial complex} $\textbf{VR}_{<}(X;r)$ has as its simplices the finite subsets of $X$ of diameter less than $r$. It is determined by its 1-skeleton (its underlying graph), and is the clique complex of the unit disk graph.
+\end{definition}
+
+\note{Does somebody want to write software that will accept as input a set of points in the plane, compute its unit disk graph, collapse it down to a minimal core (perhaps using Ethan's software), and then plot the minimal core in the plane?}
+
 
 
 \section{Minimal cores of unit disk graphs on the circle}
 
-\note{These are classifiable---Henry will describe.}
+\note{These are classifiable---we will describe.}
 
+\note{Does somebody want to take a stab at describing these ``$C_n^k$" graphs?}
 
+\begin{definition}
+The graph $C_n^k$ has $n$ vertices, $v_1, v_2, \ldots, v_n$. There is an edge $v_iv_j$ iff $|i - j| \leq k$.
+\end{definition}
 
 \section{Minimal cores of unit disk graphs in the plane}
 
-\note{This is where we will be doing much of our exploring/work!}
+\note{This is where we will be doing much of our initial exploring/work!}
 
 
 
 \section{Questions}
 
-Are the minimal cores of unit disk graphs in the plane ``simple cominations" of unit disk graphs from points on the circle, or can they exhibit ``wildly new phenomena"?
+Are the minimal cores of unit disk graphs in the plane ``simple combinations" of unit disk graphs from points on the circle, or can they exhibit ``wildly new phenomena"?
+
+\note{After experiments, we may find some new phenomena that we try to collapse down via other techniques --- see Section~\ref{sec:collapse}.}
 
 
 
-\section{Related references}
+\section{Voronoi diagrams and Delaunay triangulations}
+
+\note{Does somebody want to start briefly describing Voronoi diagrams and Delaunay triangulations?
+Steal (and cite) an image from wikipedia, as done also in Figure~\ref{fig:simplicialComplex}. The point is that these may guide which parts of the complex we try to collapse.}
+
+
+
+\section{Related references: non-topological}
 
 Related references for the non-topological aspects of this project include the following.
 The original paper appears to be~\cite{aigner1984game}, available at (\footnote{\url{https://www.math.ucdavis.edu/~erikslivken/classes/2016\_spring\_180/aigner\%20fromme.pdf}}). There is also a book~\cite{bonato2011game} by the author of (\footnote{\url{http://www.math.ryerson.ca/~abonato/papers/conjectures\_CR\_jan18\_2015.pdf}}). See the webpages (\footnote{\url{https://users.auth.gr/kehagiat/Research/CopRob/index.htm}}), (\footnote{\url{http://math.ucsd.edu/~fan/152/arch/coprob/}}), (\footnote{\url{https://www.mathworks.com/matlabcentral/fileexchange/31774-cops-and-robber-software}}), and the references within. See also (\footnote{\url{https://arxiv.org/pdf/1108.2549.pdf}}), (\footnote{\url{https://www.cambridge.org/core/journals/combinatorics-probability-and-computing/article/cops-and-robbers-on-geometric-graphs/22DA76A41397162164E755B52D6C3D81}}), (\footnote{\url{https://www.universiteitleiden.nl/binaries/content/assets/science/mi/scripties/master/2017-2018/mark-van-den-bergh-08-09-2017.pdf}}).
 
 
 
-\newpage
+\section{Related references: topological}
+
+\cite{chambers2010vietoris}
+
+Paper by Adamasek, Frick, Vakili
+
 
 
 \section{The topological perspective}
@@ -190,10 +231,6 @@ See Figure~\ref{fig:dominatedClique}.\footnote{The ``fancy" explanation for why 
 Some references for dominated vertices are \cite{BabsonKozlov2006,barmak2012strong,Matouvsek2008}, although those references are perhaps way more complicated than what we need (the notion of dominated vertices for arbitrary simplicial complexes is more complicated than that for clique complexes).
 
 
-\note{How are these topological spaces defined?}
-
-
-
 \section{Questions involving topology}
 
 If the clique complex is ever not a wedge sum of spheres, then we have disproved an open conjecture!
@@ -204,9 +241,37 @@ In the minimal cores that we generate, are all of the homology generators easy t
 
 
 
-\section{Other notions of ``collapse" in topology}
+\section{Other notions of ``collapse" in topology}\label{sec:collapse}
 
 (Besides removing dominated vertices)
+
+Last meeting (2/11/19) we talked about the idea that removing dominated vertices may not be enough to fully understand our conjecture. Here is a list of other homotopy-preserving operations that may or may not be of use to us. Many of these relate to the Vietoris-Rips complex, which is a generalization of the unit disk graph. In particular, when our points are sampled from $\R^2$ equipped with the Euclidean metric and $\delta=1$, the Vietoris-Rips complex is the clique complex of the unit disk graph.
+
+\begin{itemize}
+\item \textbf{$\varepsilon$-Crushing} \\
+Given a Vietoris-Rips complex, how else can we remove vertices in a homotopy preserving way? One answer may be $\varepsilon$-crushing, highlighted in the article by Latschev~\cite{Latschev2001}.
+In particular, the flat case in section 2 may be of use. 
+If anyone could determine whether or not this can help us simplify our complexes or if it is simply a generalization of removing dominated vertices, that would be helpful!
+\item \textbf{The Rips Shadow} \\
+Another way to simplify the Vietoris-Rips complex is to calculate its shadow, or its projection down onto the plane.
+The article by Chambers gives isomorphisms between certain homotopy groups of the Rips complex and its shadow~\cite{Chambers2008}. It also includes algorithms for computing the shadow, for those who are more programming-minded.
+\item \textbf{s-Dismantlability} \\
+In a general flag or clique complex, where every simplex corresponds to a complete subgraph of its 1-skeleton, we can define a notion of s-dismantlability.
+A vertex $v_i$ is considered \textit{s-dismantlable} in $G$ if the subgraph $N_{G}(v_i)$ of the neighbourhood of $v_i$ is dismantlable.
+Boulet et al.\ show that s-dismantlability can be used to define more homotopy preserving collapses such as edge deletion, even if the vertex isn't dominated~\cite{Boulet2010}.
+\item \textbf{Other Elementary Collapses} \\
+In a simplicial complex, there are other operations that collapse edges and vertices while preserving homotopy types. Attali et al.\ begin by defining an \textit{elementary collapse} as a method of removing two vertices, then generalize it to \textit{classical collapses, extended collapses} and \textit{generalized collapses}~\cite{Attali2013}.
+They then apply these collapses in certain orders to define various reduction sequences for common cases.
+\item Simplicial collapses (\footnote{\url{https://en.wikipedia.org/wiki/Collapse\_(topology)}})
+\item \textbf{``Punctured" simplices} \\
+Let's consider the context of this paper, where $X\subseteq \R^2$, and where we're trying to simplify $\cl(G(X))=VR(X;1)$. If $\sigma\subseteq X$ is maximal, then consider the subset $\sigma_0\subseteq \sigma$ of vertices that live on the boundary of the convex hull of $\sigma$. 
+Then $\sigma_0$ is contained in a unique maximal face (namely $\sigma$), and hence we can perform a simplicial collapse (in the bullet point above) to remove all simplices $\tau$ with $\sigma_0\subseteq \tau\subseteq \sigma$. Do this for all such maximal simplices (keeping in mind that as we remove simplices, now new simplices become maximal). 
+Iterate this. Afterwards, I think we are left only with ``unpunctured simplices", meaning only simplices with no vertices in the interiors of their convex hull. 
+\item \textbf{``Long edges"} \\
+After removing all punctured simplices as in the above bullet point, we still have a lot of long edges (note edges are punctured with probability zero, i.e.\ edges are never punctured if the points are in general position).
+Is there a nice way to remove these long edges?
+As a starting case, think of two long crossing diagonal edges (of a quadrilateral) which hence form a tetrahedron --- can we use this tetrahedron to collapse away one of these two long edges, getting down instead to two triangles?
+\end{itemize}
 
 
 
