@@ -6,6 +6,7 @@
 \usepackage{fullpage}
 \usepackage[colorlinks,linkcolor=blue,urlcolor=blue,citecolor=blue,destlabel=true]{hyperref}
 \usepackage{placeins}
+\usepackage[ruled,vlined]{algorithm2e}
 
 \newcommand{\note}[1]{\textcolor{blue}{({#1})}}
 
@@ -29,6 +30,7 @@
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\cB}{\mathcal{B}}
 \newcommand{\cone}{\mathrm{Cone}}
+\newcommand{\conv}{\mathrm{conv}}
 \DeclareMathOperator{\cl}{Cl}
 
 \begin{document}
@@ -36,6 +38,7 @@
 \title{
 A survey of the planar wedge of spheres conjecture
 %On the minimal cores of unit disk graphs
+% Planar Vietoris--Rips complexes are wedges of spheres
 }
 \author{CSU Putnam Seminar, Spring 2019 (we will add our names later)}
 \date{\today}
@@ -51,6 +54,8 @@ The clique complex of any unit disk graph is homotopy equivalent to a wedge sum 
 \end{conjecture}
 An equivalent formulation is that the Vietoris--Rips complex of any set of points in the plane is a wedge of spheres.
 We will survey what is known and not known about this conjecture, and also describe some related computational experiments.
+
+\cite{AFV,chambers2010vietoris}
 
 
 \section{Project Overview}
@@ -76,6 +81,8 @@ We will then use this software to visualize unit disk graphs of points in $\R^2$
 
 A later task will be to learn a little bit of combinatorial topology.
 Part of the motivation for this project is to prove or disprove the conjecture that ``the clique complex of the unit disk graph of any finite set of points in $\R^2$ is always homotopy equivalent to a wedge sum of spheres", whatever in the world that means!
+
+\cite{Bjorner1995,Carlsson2009,EdelsbrunnerHarer,edelsbrunner2000topological,Hatcher,Hausmann1995}
 
 \section{Cop-win graphs}\label{sec:cop-win}
 
@@ -109,9 +116,7 @@ What software options are out there, and should we write our own?
 The main place to look is google!
 Two other places to look are sage and polymake.
 
-I claim that if we wish to implement it ourselves, the ``right'' way to do it is to implement the graph data structure in \url{https://www.sciencedirect.com/science/article/pii/S0304397511009662?via\%3Dihub}, because it will help time bounds greatly for finding dominated vertices.  It does look kinda complicated, but that paper has everything we would need. 
-
-\note{Todo Henry: Share a mathematica demo for Vietoris--Rips complexes!}
+I claim that if we wish to implement it ourselves, the ``right'' way to do it is to implement the graph data structure in (\footnote{\url{https://www.sciencedirect.com/science/article/pii/S0304397511009662?via\%3Dihub}}), because it will help time bounds greatly for finding dominated vertices.  It does look kinda complicated, but that paper has everything we would need. 
 
 % Useless trivia: If you remove a dominated vertex from a graph, no dominated vertices will become un-dominated.  However, new dominated vertices \emph{may} be created.  Thus, a simple greedy algorithm (e.g. while there exists a dominated vertex, remove it) will not return incorrect results.
 
@@ -125,11 +130,30 @@ Let $V \subseteq \R^2$ be a subset of the plane.
 The \emph{unit disk graph} $G(V)$ is the graph $G$ with vertex set $V$, in $u,v$ are the vertices of an edge in $G(V)$ if and only if $d(u,v) \leq 1$.
 \end{definition}
 
-\begin{definition}
-Given a metric space $X$ and a distance threshold $r>0$, the \emph{Vietoris-Rips simplicial complex} $\textbf{VR}_{<}(X;r)$ has as its simplices the finite subsets of $X$ of diameter less than $r$. It is determined by its 1-skeleton (its underlying graph), and is the clique complex of the unit disk graph.
-\end{definition}
+Given $V\subseteq \R^2$ of size $n$, how does one compute the unit disk graph $G(V)$?
+The na\"{i}ve algorithm is to iterate over all $\binom{n}{2}$ pairs of vertices, to compute the distance between them, and then to include $uv$ as an edge if and only if $d(u,v)\le1$.
+In Algorithm~\ref{alg:udg} we give a fancier algorithm, in which we first sort the vertices of $V$ into unit square boxes, and then only search for edges between vertices in the same or adjacent boxes.
+Algorithm~\ref{alg:udg} has the same worst-case $O(n^2)$ running time as the na\"{i}ve algorithm, but will be more efficient when the vertex set is not very dense (relative to the unit scale).
 
-\note{Does somebody want to write software that will accept as input a set of points in the plane, compute its unit disk graph, collapse it down to a minimal core (perhaps using Ethan's software), and then plot the minimal core in the plane?}
+\begin{algorithm}[ht]
+\SetAlgoLined
+\KwData{Vertex set $V(\vec{x},\vec{y})\subseteq\R^2$}
+\KwResult{Edges of the unit disk graph $G(V)$}
+($x_\text{min}, y_\text{min}$) = ($\min\vec{x},\min\vec{y}$)\;
+%($x_\text{max}, y_\text{max}$) = ($\max\vec{x},\max\vec{y}$)\;
+divide $\R^2$ into square boxes of side-length 1\;
+\For{$v \in V$}{
+$[i,j]$ = $\left\lfloor x - x_\text{min}, y - y_\text{min}\right\rfloor$\;
+}
+\For{all boxes}{
+compute $d(u,v)$ among all points in this box and all immediate neighbors\;
+}
+\caption{Computing a unit disk graph}
+\label{alg:udg}
+\end{algorithm}
+
+\note{Does somebody want to write software that will accept as input a set of points in the plane, and then compute its unit disk graph?
+The na\"{i}ve algorithm would be easier than Algorithm~\ref{alg:udg} as an initial first step, though either algorithm would be great!}
 
 
 
@@ -142,6 +166,9 @@ Given a metric space $X$ and a distance threshold $r>0$, the \emph{Vietoris-Rips
 \begin{definition}
 The graph $C_n^k$ has $n$ vertices, $v_1, v_2, \ldots, v_n$. There is an edge $v_iv_j$ iff $|i - j| \leq k$.
 \end{definition}
+
+\cite{Adamaszek2013,AA-VRS1,AAFPP-J}
+
 
 \section{Minimal cores of unit disk graphs in the plane}
 
@@ -211,6 +238,13 @@ The \emph{clique complex $\cl(G)$} of a graph $G=(V,E)$ is the largest simplicia
 That is, $\cl(G)$ contains $\{v_0,\ldots,v_k\}\subseteq V$ as a simplex if $v_iv_j\in E$ (i.e.\ if $v_iv_j$ is an edge in $G$) for all $0\le i,j\le k$.
 \end{definition}
 
+\begin{definition}
+Given a metric space $X$ and a distance threshold $r>0$, the \emph{Vietoris-Rips simplicial complex} $\textbf{VR}(X;r)$ has as its simplices the finite subsets of $X$ of diameter less than or equal to $r$.
+\end{definition}
+
+One of the useful properties of the Vietoris--Rips complex is that it is determined by its 1-skeleton (its underlying graph)---indeed it is the clique complex of its 1-skeleton.
+The Vietoris--Rips complex $\textbf{VR}(X;r)$ is equivalent to the clique complex of the unit disk graph $G(X)$ when $r=1$.
+
 \note{Notice that the clique complex of the unit disk graph is the Vietoris-Rips complex of its vertex set with $\delta = 1$, equipped with the Euclidean metric - Andrew}
 
 Recall from Definition~\ref{def:dominated} that in a graph $G$ there is a notion of when one vertex \emph{dominates} another.
@@ -240,6 +274,120 @@ If the clique complexes are always wedges of spheres, then by analyzing their co
 In the minimal cores that we generate, are all of the homology generators easy to interpret (using what's known on the circle)?
 
 
+\section{Simplicial collapses}
+\label{sec:collapse}
+
+\note{We should expand this discussion of simplicial collapses.}
+
+\note{Define what it means for a simplex in a simplicial complex to be \emph{maximal}.}
+
+\note{Define simplicial collapses.}
+
+See (\footnote{\url{https://en.wikipedia.org/wiki/Collapse\_(topology)}}) for a description of simplicial collapses!
+
+
+
+\section{Punctured simplices}
+\label{sec:punctured}
+
+\subsection{Convex sets}
+
+\note{Convex sets in $\R^n$ are a classical topic, that we should define and review in $\R^2$.}
+
+\begin{definition}
+\note{Define what it means for a set $S\subseteq\R^2$ to be convex.}
+\end{definition}
+
+\begin{definition}
+Given a set $S\subseteq \R^2$, its \emph{convex hull} $\conv{\sigma}$ is the intersection of all convex sets in $\R^2$ containing $S$.
+\end{definition}
+
+\note{Add a picture of a convex hull in $\R^2$!}
+
+\begin{definition}
+Given a finite set $\sigma\subseteq \R^2$, we define its \emph{boundary vertices} to be
+\[b(\sigma)=\{x\in \sigma~|~x\in\partial\conv(\sigma)\}\]
+to be the set of all points in $\sigma$ that are on the boundary of the convex hull of $\sigma$.
+\end{definition}
+
+\subsection{Punctured sets}
+
+\note{Punctured sets are a term that we're ``inventing", definining, and using here for our purposes!}
+
+\begin{definition}
+We say that a finite set $\sigma\subseteq \R^2$ is \emph{punctured} if $b(\sigma)\neq \sigma$.
+\end{definition}
+
+Note that $\sigma\subseteq \R^2$ is punctured exactly when there exists a point $x\in\sigma$ that is in the \emph{interior} of the convex hull $\conv(\sigma)$.
+
+\note{Add a picture of an example punctured set!}
+
+\subsection{Unpunctured cores}
+
+Let's consider now the main context of this paper, where $X\subseteq \R^2$, and where we're trying to simplify $\cl(G(X))=VR(X;1)$.
+
+If $\sigma\subseteq X$ is maximal, then consider the boundary vertices $b(\sigma)\subseteq \sigma$.
+Note that $b(\sigma)$ is contained in a unique maximal simplex of $\cl(G(X))$, namely $\sigma$ \note{this is worth proving}.
+Hence if $\sigma$ is punctured, then we can perform a simplicial collapse (Section~\ref{sec:collapse}) to remove all simplices $\tau$ with $b(\sigma)\subseteq \tau\subseteq \sigma$.
+
+\begin{claim}
+\label{claim:punctured-maximal}
+If a simplicial complex with vertex set $X\subseteq\R^2$ contains a punctured simplex, then it contains a maximal punctured simplex.
+\end{claim}
+
+\begin{proof}
+\note{True? Prove this!}
+\end{proof}
+
+Starting from $\cl(G(X))$ with $X\subseteq\R^2$ finite, we may iteratively perform simplicial collapses with free faces $b(\sigma)$ (with $\sigma$ a maximal punctured simplex) until we obtain a reduced simplicial complex with no maximal punctured simplices.
+(Keep in mind that as we perform simplicial collapses, now new simplices become maximal.)
+By Claim~\ref{claim:punctured-maximal}, this reduced simplicial complex furthermore contains no punctured simplices!
+Let's call such a resulting complex an \emph{unpunctured core} of $\cl(G(X))$.
+See Algorithm~\ref{alg:punctured} for more details!
+
+\begin{algorithm}[ht]
+\SetAlgoLined
+\KwData{Clique complex of unit disk graph $\cl(G(X))$ for $X\subseteq \R^2$
+\note{How to store simplicial complexes (\footnote{\url{https://arxiv.org/pdf/1503.07444.pdf}})?}}
+\KwResult{An unpunctured core of this simplicial complex}
+(1) Determine the maximal simplicies $\sigma$ \newline
+(2) Determine the boundary vertices $b(\sigma)$ for each maximal simplex $\sigma$ \newline
+(3) Determine if each maximal simplex is punctured \newline 
+(4) Preform simplicial collapse with the convex hull of the punctured simplex as a free face\newline 
+(5) Loop to (1)
+\caption{Computing an unpunctured core}
+\label{alg:punctured}
+\end{algorithm}
+
+
+
+\subsection{Properties of unpunctured cores}
+
+\begin{question}
+\label{ques:unpunctured-core}
+Let $\cl(G(X))$ be the clique complex of the unit disk graph of $X\subseteq \R^2$. Let an ``unpunctured core" be the resulting simplicial complex after removing all maximal punctured simplices, i.e., after applying Algorithm~\ref{alg:punctured}.
+Is it true that any two unpunctured cores of $\cl(G(X))$ are isomorphic?
+\note{Wait, maybe there is a unique unpunctured core, period! Meaning it's unique not only up to isomorphism, but also up to equality!}
+\end{question}
+
+If the answer to the above is ``yes", then this would be analogous to the fact that any two minimal cores of a graph are isomorphic!
+
+If the answer to the above question is ``yes", then this is saying that the order via which we remove punctured simplices in Algorithm~\ref{alg:punctured} doesn't really matter!
+
+\subsection{Dividing the plane into ``regions" based on the maximimal (unpunctured) simplices in an unpunctured core!}
+
+\subsection{``Long edges"}
+
+Next remove all free edges, i.e., edges that are contained in a unique maximal simplex?
+Unless this edge is on the boundary (of the projection of the complex to $\R^2$), then this maximal simplex will be a tetrahedron or larger, and hence the free edge will be crossing another edge.
+This likely means that we can always choose to remove a non-Delaunay free edge (the Delaunay edges should be kept, and no two Delaunay edges cross).
+\note{This might be a good place to do computational experiments!}
+
+After removing all punctured simplices as in the above subsection, we still have a lot of long edges (note edges are punctured with probability zero, i.e.\ edges are never punctured if the points are in general position).
+Is there a nice way to remove these long edges?
+As a starting case, think of two long crossing diagonal edges (of a quadrilateral) which hence form a tetrahedron --- can we use this tetrahedron to collapse away one of these two long edges, getting down instead to two triangles?
+
+
 
 \section{Other notions of ``collapse" in topology}\label{sec:collapse}
 
@@ -255,22 +403,16 @@ If anyone could determine whether or not this can help us simplify our complexes
 \item \textbf{The Rips Shadow} \\
 Another way to simplify the Vietoris-Rips complex is to calculate its shadow, or its projection down onto the plane.
 The article by Chambers gives isomorphisms between certain homotopy groups of the Rips complex and its shadow~\cite{Chambers2008}. It also includes algorithms for computing the shadow, for those who are more programming-minded.
+
 \item \textbf{s-Dismantlability} \\
 In a general flag or clique complex, where every simplex corresponds to a complete subgraph of its 1-skeleton, we can define a notion of s-dismantlability.
 A vertex $v_i$ is considered \textit{s-dismantlable} in $G$ if the subgraph $N_{G}(v_i)$ of the neighbourhood of $v_i$ is dismantlable.
 Boulet et al.\ show that s-dismantlability can be used to define more homotopy preserving collapses such as edge deletion, even if the vertex isn't dominated~\cite{Boulet2010}.
-\item \textbf{Other Elementary Collapses} \\
+
+\item \textbf{Other Collapses} \\
 In a simplicial complex, there are other operations that collapse edges and vertices while preserving homotopy types. Attali et al.\ begin by defining an \textit{elementary collapse} as a method of removing two vertices, then generalize it to \textit{classical collapses, extended collapses} and \textit{generalized collapses}~\cite{Attali2013}.
 They then apply these collapses in certain orders to define various reduction sequences for common cases.
-\item Simplicial collapses (\footnote{\url{https://en.wikipedia.org/wiki/Collapse\_(topology)}})
-\item \textbf{``Punctured" simplices} \\
-Let's consider the context of this paper, where $X\subseteq \R^2$, and where we're trying to simplify $\cl(G(X))=VR(X;1)$. If $\sigma\subseteq X$ is maximal, then consider the subset $\sigma_0\subseteq \sigma$ of vertices that live on the boundary of the convex hull of $\sigma$. 
-Then $\sigma_0$ is contained in a unique maximal face (namely $\sigma$), and hence we can perform a simplicial collapse (in the bullet point above) to remove all simplices $\tau$ with $\sigma_0\subseteq \tau\subseteq \sigma$. Do this for all such maximal simplices (keeping in mind that as we remove simplices, now new simplices become maximal). 
-Iterate this. Afterwards, I think we are left only with ``unpunctured simplices", meaning only simplices with no vertices in the interiors of their convex hull. 
-\item \textbf{``Long edges"} \\
-After removing all punctured simplices as in the above bullet point, we still have a lot of long edges (note edges are punctured with probability zero, i.e.\ edges are never punctured if the points are in general position).
-Is there a nice way to remove these long edges?
-As a starting case, think of two long crossing diagonal edges (of a quadrilateral) which hence form a tetrahedron --- can we use this tetrahedron to collapse away one of these two long edges, getting down instead to two triangles?
+\item Does replacing a simplicial complex with its (homotopy equivalent) nerve, as described in~\cite{barmak2012strong}, ever help, for instance after having already removed all punctured simplices?
 \end{itemize}
 
 
